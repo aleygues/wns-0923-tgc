@@ -1,0 +1,31 @@
+GET http://localhost:3000/ads
+
+###
+
+POST http://localhost:3000/ads
+content-type: application/json
+
+{
+  "title": "Super bike to sell",
+  "description":
+    "My car is blue, working fine. I'm selling it because I've got a new one",
+  "owner": "car.seller@gmail.com",
+  "price": 10000,
+  "picture":
+    "https://www.automobile-magazine.fr/asset/cms/34973/config/28294/apres-plusieurs-prototypes-la-bollore-bluecar-a-fini-par-devoiler-sa-version-definitive.jpg",
+  "location": "Paris"
+}
+
+###
+
+DELETE http://localhost:3000/ads/3
+
+###
+
+PATCH http://localhost:3000/ads/6
+content-type: application/json
+
+{
+  "title": "New bike!",
+  "description": "Brand new bike"
+}
