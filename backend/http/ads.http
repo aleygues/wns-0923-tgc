@@ -6,7 +6,7 @@ POST http://localhost:3000/ads
 content-type: application/json
 
 {
-  "title": "Super bike to sell",
+  "title": "Super car",
   "description":
     "My car is blue, working fine. I'm selling it because I've got a new one",
   "owner": "car.seller@gmail.com",
@@ -22,10 +22,22 @@ DELETE http://localhost:3000/ads/3
 
 ###
 
-PATCH http://localhost:3000/ads/6
+PATCH http://localhost:3000/ads/1
 content-type: application/json
 
 {
   "title": "New bike!",
-  "description": "Brand new bike"
+  "owner": "toto@aleygues.fr"
+}
+
+###
+
+PUT http://localhost:3000/ads/1
+content-type: application/json
+
+{
+  "title": "Super bike",
+  "description":
+    "My bike is blue, working fine. I'm selling it because I've got a new one",
+  "owner": "bike.seller@gmail.com"
 }

@@ -1,0 +1,12 @@
+CREATE TABLE Ad (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  title VARCHAR(100) NOT NULL,
+  description TEXT,
+  owner VARCHAR(255) NOT NULL
+);
+
+INSERT INTO Ad (title) VALUES ("Super bike"), ("Super car");
+
+SELECT * FROM Ad;
+
+DELETE FROM Ad WHERE id=1;
