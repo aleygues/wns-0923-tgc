@@ -1,54 +1,51 @@
+import "reflect-metadata";
 import express from "express";
-import sqlite from "sqlite3";
-
-const database = new sqlite.Database("./tgc.sqlite", (err) => {
-  if (err) {
-    console.log("Error opening db");
-  } else {
-    console.log("Db connected");
-  }
-});
-database.get("PRAGMA foreign_keys = ON;");
+import { dataSource } from "./datasource";
+import { Ad } from "./entities/Ad";
 
 const app = express();
 const port = 3000;
 
 app.use(express.json());
 
+// GET /ads?categoryId=2
 app.get("/ads", (req, res) => {
-  database.all(
-    "SELECT Ad.*, Category.name AS categoryName FROM Ad LEFT JOIN Category ON Category.id = Ad.categoryId",
-    (err, rows) => {
-      if (err) {
-        console.log(err);
-        res.status(500).send("Error occured");
-      } else {
-        res.json(rows);
-      }
-    }
-  );
+  Ad.find()
+    .then((ads) => {
+      res.send(ads);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send();
+    });
 });
 
-app.post("/ads", (req, res) => {
-  database.run(
-    "INSERT INTO Ad (title, description, owner, categoryId) VALUES ($title, $description, $owner, $categoryId)",
-    {
-      $title: req.body.title,
-      $description: req.body.description,
-      $owner: req.body.owner,
-      $categoryId: req.body.categoryId,
-    },
-    (err) => {
-      if (err) {
-        console.log(err);
-        res.status(500).send("Error occured");
-      } else {
-        res.status(204).send();
-      }
-    }
-  );
+app.get("/ads/:id", async (req, res) => {
+  try {
+    const ad = Ad.findOne({ where: { id: Number(req.params.id) } });
+    res.send(ad);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send();
+  }
 });
 
+app.post("/ads", async (req, res) => {
+  try {
+    const newAd = new Ad({
+      description: req.body.description,
+      title: req.body.title,
+    });
+
+    await newAd.save();
+    res.send(newAd);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send();
+  }
+});
+
+/* 
 app.delete("/ads/:adId", (req, res) => {
   database.run(
     "DELETE FROM Ad WHERE id=$adId",
@@ -114,8 +111,13 @@ app.put("/ads/:adId", (req, res) => {
       }
     }
   );
-});
+}); */
 
-app.listen(port, () => {
-  console.log("Server started!");
+// GET /ads
+// GET /categories/:categoryId => should return category info (name)
+// GET /categories/:categoryId/ads => should return category ads
+
+app.listen(port, async () => {
+  await dataSource.initialize();
+  console.log("Server ready 🚀!");
 });
