@@ -8,6 +8,7 @@ const database = new sqlite.Database("./tgc.sqlite", (err) => {
     console.log("Db connected");
   }
 });
+database.get("PRAGMA foreign_keys = ON;");
 
 const app = express();
 const port = 3000;
@@ -15,23 +16,27 @@ const port = 3000;
 app.use(express.json());
 
 app.get("/ads", (req, res) => {
-  database.all("SELECT * FROM Ad", (err, rows) => {
-    if (err) {
-      console.log(err);
-      res.status(500).send("Error occured");
-    } else {
-      res.json(rows);
+  database.all(
+    "SELECT Ad.*, Category.name AS categoryName FROM Ad LEFT JOIN Category ON Category.id = Ad.categoryId",
+    (err, rows) => {
+      if (err) {
+        console.log(err);
+        res.status(500).send("Error occured");
+      } else {
+        res.json(rows);
+      }
     }
-  });
+  );
 });
 
 app.post("/ads", (req, res) => {
   database.run(
-    "INSERT INTO Ad (title, description, owner) VALUES ($title, $description, $owner)",
+    "INSERT INTO Ad (title, description, owner, categoryId) VALUES ($title, $description, $owner, $categoryId)",
     {
       $title: req.body.title,
       $description: req.body.description,
       $owner: req.body.owner,
+      $categoryId: req.body.categoryId,
     },
     (err) => {
       if (err) {
