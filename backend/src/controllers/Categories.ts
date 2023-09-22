@@ -3,8 +3,8 @@ import { Request, Response } from "express";
 import { Category } from "../entities/Category";
 import { validate } from "class-validator";
 
-export class CategoriesController implements Controller {
-  async getAll(req: Request, res: Response) {
+export class CategoriesController extends Controller {
+  getAll = async (req: Request, res: Response) => {
     Category.find()
       .then((categories) => {
         res.send(categories);
@@ -13,9 +13,9 @@ export class CategoriesController implements Controller {
         console.error(err);
         res.status(500).send();
       });
-  }
+  };
 
-  async getOne(req: Request, res: Response) {
+  getOne = async (req: Request, res: Response) => {
     try {
       const ad = await Category.findOne({
         where: { id: Number(req.params.id) },
@@ -25,9 +25,9 @@ export class CategoriesController implements Controller {
       console.error(err);
       res.status(500).send();
     }
-  }
+  };
 
-  async createOne(req: Request, res: Response) {
+  createOne = async (req: Request, res: Response) => {
     try {
       const newCategory = new Category();
       newCategory.name = req.body.name;
@@ -43,9 +43,9 @@ export class CategoriesController implements Controller {
       console.error(err);
       res.status(500).send();
     }
-  }
+  };
 
-  async deleteOne(req: Request, res: Response) {
+  deleteOne = async (req: Request, res: Response) => {
     try {
       const ad = await Category.findOne({
         where: { id: Number(req.params.id) },
@@ -61,9 +61,9 @@ export class CategoriesController implements Controller {
       console.error(err);
       res.status(500).send();
     }
-  }
+  };
 
-  async patchOne(req: Request, res: Response) {
+  patchOne = async (req: Request, res: Response) => {
     try {
       const ad = await Category.findOne({
         where: { id: Number(req.params.id) },
@@ -85,30 +85,5 @@ export class CategoriesController implements Controller {
       console.error(err);
       res.status(500).send();
     }
-  }
-
-  async updateOne(req: Request, res: Response) {
-    try {
-      const ad = await Category.findOne({
-        where: { id: Number(req.params.id) },
-      });
-
-      if (ad) {
-        // should be tested again
-        const newAd = Object.assign(req.body, { id: ad.id });
-        const errors = await validate(newAd);
-        if (errors.length === 0) {
-          await Category.save(newAd);
-          res.status(204).send();
-        } else {
-          res.status(400).json({ errors: errors });
-        }
-      }
-
-      res.status(204).send();
-    } catch (err: any) {
-      console.error(err);
-      res.status(500).send();
-    }
-  }
+  };
 }

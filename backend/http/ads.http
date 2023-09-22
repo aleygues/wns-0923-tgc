@@ -33,13 +33,7 @@ content-type: application/json
 
 {
   "title": "JE vends un vélo normal",
-  "description":
-    "My car is blue, working fine. I'm selling it because I've got a new one",
-  "owner": "car.seller@gmail.com",
-  "price": 10000,
-  "picture":
-    "https://www.automobile-magazine.fr/asset/cms/34973/config/28294/apres-plusieurs-prototypes-la-bollore-bluecar-a-fini-par-devoiler-sa-version-definitive.jpg",
-  "location": "Paris",
+  "description": null,
   "categoryId": 1
 }
 
@@ -49,16 +43,16 @@ DELETE http://localhost:3000/ads/1
 
 ###
 
-PATCH http://localhost:3000/ads/2
+PATCH http://localhost:3000/ads/1
 content-type: application/json
 
 {
-  "title": "New bike!"
+  "categoryId": 1
 }
 
 ###
 
-PUT http://localhost:3000/ads/2
+PUT http://localhost:3000/ads/1
 content-type: application/json
 
 {
