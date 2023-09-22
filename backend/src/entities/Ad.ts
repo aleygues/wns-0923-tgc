@@ -3,11 +3,14 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { Length, ValidateIf } from "class-validator";
 import { Category } from "./Category";
+import { Tag } from "./Tag";
 
 @Entity()
 export class Ad extends BaseEntity {
@@ -25,6 +28,12 @@ export class Ad extends BaseEntity {
 
   @ManyToOne(() => Category, (category) => category.ads)
   category!: Category;
+
+  @ManyToMany(() => Tag, (tag) => tag.ads)
+  // check with SQLite extension! If you forget this following line, the
+  // pivot table won't be generated
+  @JoinTable()
+  tags!: Tag[];
 
   @CreateDateColumn()
   createdAt!: Date;

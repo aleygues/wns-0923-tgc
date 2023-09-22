@@ -1,18 +1,13 @@
 import { Controller } from ".";
 import { Request, Response } from "express";
-import { Ad } from "../entities/Ad";
+import { Tag } from "../entities/Tag";
 import { validate } from "class-validator";
 
-export class AdsController extends Controller {
+export class TagsController extends Controller {
   getAll = async (req: Request, res: Response) => {
-    Ad.find({
-      relations: {
-        category: true,
-        tags: true,
-      },
-    })
-      .then((ads) => {
-        res.send(ads);
+    Tag.find()
+      .then((tags) => {
+        res.send(tags);
       })
       .catch((err) => {
         console.error(err);
@@ -22,14 +17,10 @@ export class AdsController extends Controller {
 
   getOne = async (req: Request, res: Response) => {
     try {
-      const ad = await Ad.findOne({
+      const tag = await Tag.findOne({
         where: { id: Number(req.params.id) },
-        relations: {
-          category: true,
-          tags: true,
-        },
       });
-      res.send(ad);
+      res.send(tag);
     } catch (err: any) {
       console.error(err);
       res.status(500).send();
@@ -38,16 +29,13 @@ export class AdsController extends Controller {
 
   createOne = async (req: Request, res: Response) => {
     try {
-      const newAd = new Ad();
-      newAd.description = req.body.description;
-      newAd.title = req.body.title;
-      newAd.category = req.body.category;
-      newAd.tags = req.body.tags;
+      const newTag = new Tag();
+      newTag.name = req.body.name;
 
-      const errors = await validate(newAd);
+      const errors = await validate(newTag);
       if (errors.length === 0) {
-        await newAd.save();
-        res.send(newAd);
+        await newTag.save();
+        res.send(newTag);
       } else {
         res.status(400).json({ errors: errors });
       }
@@ -59,14 +47,17 @@ export class AdsController extends Controller {
 
   deleteOne = async (req: Request, res: Response) => {
     try {
-      const ad = await Ad.findOne({ where: { id: Number(req.params.id) } });
-      if (ad) {
-        await ad.remove();
+      const tag = await Tag.findOne({
+        where: { id: Number(req.params.id) },
+      });
+      if (tag) {
+        await tag.remove();
         res.status(204).send();
       } else {
         res.status(404).send();
       }
     } catch (err: any) {
+      // typeguards
       console.error(err);
       res.status(500).send();
     }
@@ -74,16 +65,15 @@ export class AdsController extends Controller {
 
   patchOne = async (req: Request, res: Response) => {
     try {
-      const ad = await Ad.findOne({ where: { id: Number(req.params.id) } });
+      const tag = await Tag.findOne({
+        where: { id: Number(req.params.id) },
+      });
 
-      if (ad) {
-        Object.assign(ad, req.body, { id: ad.id });
-        if (req.body.categoryId) {
-          ad.category = req.body.categoryId;
-        }
-        const errors = await validate(ad);
+      if (tag) {
+        Object.assign(tag, req.body, { id: tag.id });
+        const errors = await validate(tag);
         if (errors.length === 0) {
-          await ad.save();
+          await tag.save();
           res.status(204).send();
         } else {
           res.status(400).json({ errors: errors });
