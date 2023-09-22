@@ -4,9 +4,29 @@ import { Ad } from "../entities/Ad";
 import { validate } from "class-validator";
 
 export class AdsController extends Controller {
+  getAll = async (req: Request, res: Response) => {
+    Ad.find({
+      relations: {
+        category: true,
+      },
+    })
+      .then((ads) => {
+        res.send(ads);
+      })
+      .catch((err) => {
+        console.error(err);
+        res.status(500).send();
+      });
+  };
+
   getOne = async (req: Request, res: Response) => {
     try {
-      const ad = await Ad.findOne({ where: { id: Number(req.params.id) } });
+      const ad = await Ad.findOne({
+        where: { id: Number(req.params.id) },
+        relations: {
+          category: true,
+        },
+      });
       res.send(ad);
     } catch (err: any) {
       console.error(err);
