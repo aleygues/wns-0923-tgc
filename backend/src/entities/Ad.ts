@@ -30,6 +30,8 @@ export class Ad extends BaseEntity {
   category!: Category;
 
   @ManyToMany(() => Tag, (tag) => tag.ads)
+  // check with SQLite extension! If you forget this following line, the
+  // pivot table won't be generated
   @JoinTable()
   tags!: Tag[];
 

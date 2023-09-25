@@ -15,7 +15,7 @@ export class Tag extends BaseEntity {
   id!: number;
 
   @Column({ length: 100 })
-  @Length(10, 100)
+  @Length(3, 100)
   name!: string;
 
   @ManyToMany(() => Ad, (ad) => ad.tags)
