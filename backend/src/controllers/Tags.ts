@@ -16,74 +16,53 @@ export class TagsController extends Controller {
   };
 
   getOne = async (req: Request, res: Response) => {
-    try {
-      const tag = await Tag.findOne({
-        where: { id: Number(req.params.id) },
-      });
-      res.send(tag);
-    } catch (err: any) {
-      console.error(err);
-      res.status(500).send();
-    }
+    const tag = await Tag.findOne({
+      where: { id: Number(req.params.id) },
+    });
+    res.send(tag);
   };
 
   createOne = async (req: Request, res: Response) => {
-    try {
-      const newTag = new Tag();
-      newTag.name = req.body.name;
+    const newTag = new Tag();
+    newTag.name = req.body.name;
 
-      const errors = await validate(newTag);
-      if (errors.length === 0) {
-        await newTag.save();
-        res.send(newTag);
-      } else {
-        res.status(400).json({ errors: errors });
-      }
-    } catch (err) {
-      console.error(err);
-      res.status(500).send();
+    const errors = await validate(newTag);
+    if (errors.length === 0) {
+      await newTag.save();
+      res.send(newTag);
+    } else {
+      res.status(400).json({ errors: errors });
     }
   };
 
   deleteOne = async (req: Request, res: Response) => {
-    try {
-      const tag = await Tag.findOne({
-        where: { id: Number(req.params.id) },
-      });
-      if (tag) {
-        await tag.remove();
-        res.status(204).send();
-      } else {
-        res.status(404).send();
-      }
-    } catch (err: any) {
-      // typeguards
-      console.error(err);
-      res.status(500).send();
+    const tag = await Tag.findOne({
+      where: { id: Number(req.params.id) },
+    });
+    if (tag) {
+      await tag.remove();
+      res.status(204).send();
+    } else {
+      res.status(404).send();
     }
   };
 
   patchOne = async (req: Request, res: Response) => {
-    try {
-      const tag = await Tag.findOne({
-        where: { id: Number(req.params.id) },
-      });
+    const tag = await Tag.findOne({
+      where: { id: Number(req.params.id) },
+    });
 
-      if (tag) {
-        Object.assign(tag, req.body, { id: tag.id });
-        const errors = await validate(tag);
-        if (errors.length === 0) {
-          await tag.save();
-          res.status(204).send();
-        } else {
-          res.status(400).json({ errors: errors });
-        }
+    if (tag) {
+      Object.assign(tag, req.body, { id: tag.id });
+      const errors = await validate(tag);
+      if (errors.length === 0) {
+        await tag.save();
+        res.status(204).send();
       } else {
-        res.status(404).send();
+        res.status(400).json({ errors: errors });
       }
-    } catch (err: any) {
-      console.error(err);
-      res.status(500).send();
+    } else {
+      res.status(404).send();
     }
   };
 }

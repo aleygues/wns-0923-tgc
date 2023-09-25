@@ -17,9 +17,11 @@ export class Ad extends BaseEntity {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column({ length: 100 })
-  @Length(10, 100)
+  @Column()
   title!: string;
+
+  @Column()
+  price!: number;
 
   @Column({ nullable: true })
   @Length(0, 5000)
