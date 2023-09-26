@@ -1,4 +1,21 @@
 import Link from "next/link";
+import { Category, CategoryProps } from "./Category";
+
+const categories: CategoryProps[] = [
+  { name: "Ameublement", link: "" },
+  { name: "Électroménager", link: "" },
+  { name: "Photographie", link: "" },
+  { name: "Informatique", link: "" },
+  { name: "Téléphonie", link: "" },
+  { name: "Vélos", link: "" },
+  { name: "Véhicules", link: "" },
+  { name: "Sport", link: "" },
+  { name: "Habillement", link: "" },
+  { name: "Bébé", link: "" },
+  { name: "Outillage", link: "" },
+  { name: "Services", link: "" },
+  { name: "Vacances", link: "" },
+];
 
 export function Header(): React.ReactNode {
   return (
@@ -32,57 +49,16 @@ export function Header(): React.ReactNode {
         </a>
       </div>
       <nav className="categories-navigation">
-        <a href="" className="category-navigation-link">
-          Ameublement
-        </a>{" "}
-        •
-        <a href="" className="category-navigation-link">
-          Électroménager
-        </a>{" "}
-        •
-        <a href="" className="category-navigation-link">
-          Photographie
-        </a>{" "}
-        •
-        <a href="" className="category-navigation-link">
-          Informatique
-        </a>{" "}
-        •
-        <a href="" className="category-navigation-link">
-          Téléphonie{" "}
-        </a>{" "}
-        •
-        <a href="" className="category-navigation-link">
-          Vélos
-        </a>{" "}
-        •
-        <a href="" className="category-navigation-link">
-          Véhicules
-        </a>{" "}
-        •
-        <a href="" className="category-navigation-link">
-          Sport
-        </a>{" "}
-        •
-        <a href="" className="category-navigation-link">
-          Habillement
-        </a>{" "}
-        •
-        <a href="" className="category-navigation-link">
-          Bébé
-        </a>{" "}
-        •
-        <a href="" className="category-navigation-link">
-          Outillage
-        </a>{" "}
-        •
-        <a href="" className="category-navigation-link">
-          Services{" "}
-        </a>{" "}
-        •
-        <a href="" className="category-navigation-link">
-          Vacances
-        </a>
+        {categories.map((category, index) => (
+          <>
+            <Category
+              key={category.name}
+              name={category.name}
+              link={category.link}
+            />{" "}
+            {index < categories.length - 1 && "•"}
+          </>
+        ))}
       </nav>
     </header>
   );

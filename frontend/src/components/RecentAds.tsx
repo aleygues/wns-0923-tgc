@@ -1,7 +1,6 @@
-import Link from "next/link";
 import { AdCard, AdCardProps } from "./AdCard";
 
-const ads: AdCardProps[] = [
+export const ads: AdCardProps[] = [
   {
     title: "Table",
     price: 120,
