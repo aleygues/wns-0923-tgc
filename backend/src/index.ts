@@ -1,14 +1,21 @@
 import "reflect-metadata";
 import express from "express";
+import cors from "cors";
 import { dataSource } from "./datasource";
 import { AdsController } from "./controllers/Ads";
 import { CategoriesController } from "./controllers/Categories";
 import { TagsController } from "./controllers/Tags";
 
+/*
+  CLIENT → (API - Express) SERVEUR (ORM - Typeorm) → BDD (SQLite)
+  CLIENT ← (API - Express) SERVEUR (ORM - Typeorm) ← BDD (SQLite)
+*/
+
 const app = express();
-const port = 3000;
+const port = 5000;
 
 app.use(express.json());
+app.use(cors());
 
 function asyncController(controller: Function) {
   return async (
@@ -48,6 +55,10 @@ app.post("/tags", asyncController(tagsController.createOne));
 app.delete("/tags/:id", asyncController(tagsController.deleteOne));
 app.patch("/tags/:id", asyncController(tagsController.patchOne));
 app.put("/tags/:id", asyncController(tagsController.updateOne));
+
+app.all("*", (req, res) => {
+  res.status(404).json({ message: "Not found" });
+});
 
 app.listen(port, async () => {
   await dataSource.initialize();

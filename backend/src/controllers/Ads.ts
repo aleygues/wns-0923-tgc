@@ -5,7 +5,7 @@ import { validate } from "class-validator";
 
 export class AdsController extends Controller {
   getAll = async (req: Request, res: Response) => {
-    const ads = Ad.find({
+    const ads = await Ad.find({
       relations: {
         category: true,
         tags: true,
@@ -29,6 +29,8 @@ export class AdsController extends Controller {
     const newAd = new Ad();
     newAd.description = req.body.description;
     newAd.title = req.body.title;
+    newAd.price = req.body.price;
+    newAd.imgUrl = req.body.imgUrl;
     newAd.category = req.body.category;
     newAd.tags = req.body.tags;
 

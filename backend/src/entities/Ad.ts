@@ -23,6 +23,9 @@ export class Ad extends BaseEntity {
   @Column()
   price!: number;
 
+  @Column()
+  imgUrl!: string;
+
   @Column({ nullable: true })
   @Length(0, 5000)
   @ValidateIf((object, value) => !!value)
