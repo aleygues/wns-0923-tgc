@@ -1,30 +1,42 @@
+import { AdType } from "@/components/AdCard";
 import { Layout } from "@/components/Layout";
-/* import { ads } from "@/components/RecentAds"; */
+import { API_URL } from "@/config";
+import axios from "axios";
 import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 
 export default function Ad() {
-  const router = useRouter();
+  const [ad, setAd] = useState<AdType>();
 
+  const router = useRouter();
   const adId = router.query.id as string;
-  let foundAd = null;
-  /* for (const ad of ads) {
-    if (ad.link.endsWith(adId)) {
-      foundAd = ad;
-      break;
+
+  async function fetchAd() {
+    const result = await axios.get<AdType>(`${API_URL}/ads/${adId}`);
+    setAd(result.data);
+  }
+
+  useEffect(() => {
+    // mounting
+    if (adId !== undefined) {
+      fetchAd();
     }
-  } */
-  // const foundAd = ads.find(ad => ad.link.endsWith(adId));
+  }, [adId]);
 
   return (
     <Layout title="Ad">
       <main className="main-content">
         <p>Offre ID: {router.query.id}</p>
-        {/*         {foundAd && (
+        {ad ? (
           <>
-            <h2>{foundAd.title}</h2>
-            <p>{foundAd.price} €</p>
+            <h2>{ad.title}</h2>
+            <p>{ad.price} €</p>
           </>
-        )} */}
+        ) : adId ? (
+          "Chargement/erreur"
+        ) : (
+          "Il manque l'id dans l'URL"
+        )}
       </main>
     </Layout>
   );

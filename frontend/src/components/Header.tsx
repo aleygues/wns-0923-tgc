@@ -1,23 +1,22 @@
 import Link from "next/link";
-import { Category, CategoryProps } from "./Category";
-
-const categories: CategoryProps[] = [
-  { name: "Ameublement", link: "" },
-  { name: "Électroménager", link: "" },
-  { name: "Photographie", link: "" },
-  { name: "Informatique", link: "" },
-  { name: "Téléphonie", link: "" },
-  { name: "Vélos", link: "" },
-  { name: "Véhicules", link: "" },
-  { name: "Sport", link: "" },
-  { name: "Habillement", link: "" },
-  { name: "Bébé", link: "" },
-  { name: "Outillage", link: "" },
-  { name: "Services", link: "" },
-  { name: "Vacances", link: "" },
-];
+import { Category, CategoryType } from "./Category";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { API_URL } from "@/config";
 
 export function Header(): React.ReactNode {
+  const [categories, setCategories] = useState<CategoryType[]>([]);
+
+  async function fetchCategories() {
+    const result = await axios.get<CategoryType[]>(`${API_URL}/categories`);
+    setCategories(result.data);
+  }
+
+  useEffect(() => {
+    // mounting
+    fetchCategories();
+  }, []);
+
   return (
     <header className="header">
       <div className="main-menu">
@@ -52,9 +51,10 @@ export function Header(): React.ReactNode {
         {categories.map((category, index) => (
           <>
             <Category
-              key={category.name}
+              key={category.id}
+              onClick={() => alert("Clicked")}
               name={category.name}
-              link={category.link}
+              id={category.id}
             />{" "}
             {index < categories.length - 1 && "•"}
           </>

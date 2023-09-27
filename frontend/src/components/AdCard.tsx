@@ -1,10 +1,12 @@
-export type AdCardProps = {
+export type AdType = {
   id: number;
   link: string;
   imgUrl: string;
   title: string;
   price: number;
 };
+
+export type AdCardProps = AdType;
 
 export function AdCard(props: AdCardProps): React.ReactNode {
   return (
