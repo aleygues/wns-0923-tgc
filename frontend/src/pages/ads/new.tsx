@@ -13,6 +13,8 @@ type AdFormData = {
 
 export default function NewAd() {
   const [categories, setCategories] = useState<CategoryType[]>([]);
+  const [error, setError] = useState<"title" | "price">();
+  const [hasBeenSent, setHasBeenSent] = useState(false);
 
   async function fetchCategories() {
     const result = await axios.get<CategoryType[]>(`${API_URL}/categories`);
@@ -24,8 +26,9 @@ export default function NewAd() {
     fetchCategories();
   }, []);
 
-  function onSubmit(event: FormEvent<HTMLFormElement>) {
+  async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setError(undefined);
     const form = event.target as HTMLFormElement;
     const formData = new FormData(form);
     const data = Object.fromEntries(
@@ -37,13 +40,31 @@ export default function NewAd() {
       delete data.categoryId;
     }
 
-    console.log(data);
+    data.price = Number(data.price);
+
+    if (data.title.trim().length < 3) {
+      setError("title");
+    } else if (data.price < 0) {
+      setError("price");
+    } else {
+      const result = await axios.post(`${API_URL}/ads`, data);
+      if ("id" in result.data) {
+        form.reset();
+        setHasBeenSent(true);
+        // redirect to /ads/result.data.id
+      }
+    }
   }
 
   return (
     <Layout title="Nouvelle offre">
       <main className="main-content">
         <p>Poster une nouvelle offre</p>
+        {error === "price" && <p>Le prix doit être positif</p>}
+        {error === "title" && (
+          <p>Le titre est requis et doit faire plus de 3 caractères</p>
+        )}
+        {hasBeenSent && <p>Offre ajoutée !</p>}
         <form onSubmit={onSubmit}>
           <input type="text" name="title" placeholder="Titre de l'annonce" />
           <br />
@@ -53,6 +74,9 @@ export default function NewAd() {
             name="description"
             placeholder="Description de l'annonce"
           />
+          <br />
+          <br />
+          <input type="text" name="imgUrl" placeholder="Lien de l'image" />
           <br />
           <br />
           <input type="number" name="price" placeholder="0,00€" />

@@ -11,7 +11,7 @@ POST http://localhost:5000/categories
 content-type: application/json
 
 {
-  "name": "Super category"
+  "name": "Second category"
 }
 
 ### Categories - patchOne
@@ -32,7 +32,7 @@ GET http://localhost:5000/categories/1/ads
 GET http://localhost:5000/ads
 
 ### Ads - getAll (with filter)
-GET http://localhost:5000/ads?search=bike
+GET http://localhost:5000/ads?categoryId=12
 
 ### Ads - getOne
 GET http://localhost:5000/ads/5
@@ -46,7 +46,7 @@ content-type: application/json
   "description": null,
   "price": 100,
   "imgUrl": "https://cdn.pixabay.com/photo/2023/08/26/14/19/cupcake-8215179_1280.jpg",
-  "category": null,
+  "category": { "id": 12 },
   "tags": []
 }
 

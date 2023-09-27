@@ -1,3 +1,4 @@
+import React from "react";
 import Link from "next/link";
 import { Category, CategoryType } from "./Category";
 import { useEffect, useState } from "react";
@@ -49,15 +50,14 @@ export function Header(): React.ReactNode {
       </div>
       <nav className="categories-navigation">
         {categories.map((category, index) => (
-          <>
+          <React.Fragment key={category.id}>
             <Category
-              key={category.id}
               onClick={() => alert("Clicked")}
               name={category.name}
               id={category.id}
             />{" "}
             {index < categories.length - 1 && "•"}
-          </>
+          </React.Fragment>
         ))}
       </nav>
     </header>
