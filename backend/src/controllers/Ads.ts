@@ -6,8 +6,9 @@ import { In, LessThanOrEqual, Like, MoreThanOrEqual } from "typeorm";
 
 export class AdsController extends Controller {
   getAll = async (req: Request, res: Response) => {
-    // req.params : /ads/:id. Non
-    // req.body : POST/PUT/PATCH. Non
+    // Comment passer des params à nos controller ? 3 possibilités :
+    // req.params : /ads/:id. Non (car sert à identifier une ressource)
+    // req.body : POST/PUT/PATCH. Non (car ne fonctionne pas sur GET)
     // req.query : /ads?categoryId=12. Oui
     const where: any = {};
 

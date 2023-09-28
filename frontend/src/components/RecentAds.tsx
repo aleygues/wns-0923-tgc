@@ -5,6 +5,7 @@ import { API_URL } from "@/config";
 
 type RecentAdsProps = {
   categoryId?: number;
+  searchWord?: string;
 };
 
 export function RecentAds(props: RecentAdsProps): React.ReactNode {
@@ -22,7 +23,11 @@ export function RecentAds(props: RecentAdsProps): React.ReactNode {
     let url = `${API_URL}/ads?`;
 
     if (props.categoryId) {
-      url += `categoryIn=${props.categoryId}`;
+      url += `categoryIn=${props.categoryId}&`;
+    }
+
+    if (props.searchWord) {
+      url += `searchTitle=${props.searchWord}&`;
     }
 
     const result = await axios.get(url);
@@ -32,7 +37,7 @@ export function RecentAds(props: RecentAdsProps): React.ReactNode {
   useEffect(() => {
     // mounting
     fetchAds();
-  }, [props.categoryId]);
+  }, [props.categoryId, props.searchWord]);
 
   return (
     <main className="main-content">

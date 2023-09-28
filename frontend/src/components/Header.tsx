@@ -4,8 +4,16 @@ import { Category, CategoryType } from "./Category";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { API_URL } from "@/config";
+import { useRouter } from "next/router";
 
 export function Header(): React.ReactNode {
+  const [searchWord, setSearchWord] = useState("");
+  const router = useRouter();
+  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    router.push(`/?searchWord=${searchWord.trim()}`);
+  }
+
   const [categories, setCategories] = useState<CategoryType[]>([]);
 
   async function fetchCategories() {
@@ -27,9 +35,14 @@ export function Header(): React.ReactNode {
             <span className="desktop-long-label">THE GOOD CORNER</span>
           </Link>
         </h1>
-        <form className="text-field-with-button">
-          <input className="text-field main-search-field" type="search" />
-          <button className="button button-primary">
+        <form className="text-field-with-button" onSubmit={onSubmit}>
+          <input
+            className="text-field main-search-field"
+            type="search"
+            value={searchWord}
+            onChange={(e) => setSearchWord(e.target.value)}
+          />
+          <button className="button button-primary" type="submit">
             <svg
               aria-hidden="true"
               width="16"
