@@ -5,11 +5,11 @@ import axios from "axios";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
-export default function Ad() {
+export default function Ad(): React.ReactNode {
   const [ad, setAd] = useState<AdType>();
 
   const router = useRouter();
-  const adId = router.query.id as string;
+  const adId = router.query.id;
 
   async function fetchAd() {
     const result = await axios.get<AdType>(`${API_URL}/ads/${adId}`);
@@ -18,7 +18,7 @@ export default function Ad() {
 
   useEffect(() => {
     // mounting
-    if (adId !== undefined) {
+    if (typeof adId === "string") {
       fetchAd();
     }
   }, [adId]);

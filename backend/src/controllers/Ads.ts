@@ -2,10 +2,49 @@ import { Controller } from ".";
 import { Request, Response } from "express";
 import { Ad } from "../entities/Ad";
 import { validate } from "class-validator";
+import { In, LessThanOrEqual, Like, MoreThanOrEqual } from "typeorm";
 
 export class AdsController extends Controller {
   getAll = async (req: Request, res: Response) => {
+    // req.params : /ads/:id. Non
+    // req.body : POST/PUT/PATCH. Non
+    // req.query : /ads?categoryId=12. Oui
+    const where: any = {};
+
+    if (typeof req.query.categoryIn === "string") {
+      where.category = { id: In(req.query.categoryIn.split(",")) };
+    }
+
+    if (req.query.searchTitle) {
+      where.title = Like(`%${req.query.searchTitle}%`);
+    }
+
+    if (req.query.priceGte) {
+      where.price = MoreThanOrEqual(Number(req.query.priceGte));
+    }
+
+    if (req.query.priceLte) {
+      where.price = LessThanOrEqual(Number(req.query.priceLte));
+    }
+
+    const order: any = {};
+    if (
+      typeof req.query.orderByTitle === "string" &&
+      ["ASC", "DESC"].includes(req.query.orderByTitle)
+    ) {
+      order.title = req.query.orderByTitle; // req.query.orderByTitle = ASC | DESC
+    }
+
+    if (
+      typeof req.query.orderByPrice === "string" &&
+      ["ASC", "DESC"].includes(req.query.orderByPrice)
+    ) {
+      order.price = req.query.orderByPrice; // req.query.orderByTitle = ASC | DESC
+    }
+
     const ads = await Ad.find({
+      where,
+      order,
       relations: {
         category: true,
         tags: true,

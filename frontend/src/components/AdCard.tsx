@@ -1,3 +1,6 @@
+import { API_URL } from "@/config";
+import axios from "axios";
+
 export type AdType = {
   id: number;
   link: string;
@@ -6,9 +9,19 @@ export type AdType = {
   price: number;
 };
 
-export type AdCardProps = AdType;
+export type AdCardProps = AdType & {
+  onDelete?: () => void;
+};
 
 export function AdCard(props: AdCardProps): React.ReactNode {
+  async function deleteAd() {
+    await axios.delete(`${API_URL}/ads/${props.id}`);
+    if (props.onDelete) {
+      props.onDelete();
+    }
+    // props.onDelete?.();
+  }
+
   return (
     <div className="ad-card-container">
       <a className="ad-card-link" href={props.link}>
@@ -18,6 +31,7 @@ export function AdCard(props: AdCardProps): React.ReactNode {
           <div className="ad-card-price">{props.price} €</div>
         </div>
       </a>
+      {props.onDelete && <button onClick={deleteAd}>Supprimer</button>}
     </div>
   );
 }

@@ -1,9 +1,13 @@
 import { useEffect, useState } from "react";
-import { AdCard, AdCardProps } from "./AdCard";
+import { AdCard, AdCardProps, AdType } from "./AdCard";
 import axios from "axios";
 import { API_URL } from "@/config";
 
-export function RecentAds(): React.ReactNode {
+type RecentAdsProps = {
+  categoryId?: number;
+};
+
+export function RecentAds(props: RecentAdsProps): React.ReactNode {
   const [ads, setAds] = useState([] as AdCardProps[]);
   const [totalPrice, setTotalPrice] = useState(0);
 
@@ -13,14 +17,22 @@ export function RecentAds(): React.ReactNode {
   }
 
   async function fetchAds() {
-    const result = await axios.get(API_URL + "/ads");
+    // be careful here, I'm injected a category ID filter
+    // but it depends on how you implement your filter on your API
+    let url = `${API_URL}/ads?`;
+
+    if (props.categoryId) {
+      url += `categoryIn=${props.categoryId}`;
+    }
+
+    const result = await axios.get(url);
     setAds(result.data);
   }
 
   useEffect(() => {
     // mounting
     fetchAds();
-  }, []);
+  }, [props.categoryId]);
 
   return (
     <main className="main-content">
@@ -35,6 +47,7 @@ export function RecentAds(): React.ReactNode {
               price={item.price}
               imgUrl={item.imgUrl}
               link={`/ads/${item.id}`}
+              onDelete={fetchAds}
             />
             <button
               onClick={() => {
