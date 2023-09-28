@@ -4,7 +4,6 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
 export default function Home() {
-  // check if we got query.searchWord (check useRouter)
   const router = useRouter();
   const [searchWord, setSearchWord] = useState<string>();
 
