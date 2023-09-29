@@ -1,5 +1,6 @@
 import { API_URL } from "@/config";
 import axios from "axios";
+import { CategoryType } from "./Category";
 
 export type AdType = {
   id: number;
@@ -7,6 +8,8 @@ export type AdType = {
   imgUrl: string;
   title: string;
   price: number;
+  description: string;
+  category: CategoryType | null;
 };
 
 export type AdCardProps = AdType & {

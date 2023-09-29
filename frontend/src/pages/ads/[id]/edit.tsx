@@ -1,11 +1,13 @@
+/* eslint-disable react/no-unescaped-entities */
 import { AdType } from "@/components/AdCard";
+import AdForm from "@/components/AdForm";
 import { Layout } from "@/components/Layout";
 import { API_URL } from "@/config";
 import axios from "axios";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
-export default function Ad(): React.ReactNode {
+export default function EditAd() {
   const [ad, setAd] = useState<AdType>();
 
   const router = useRouter();
@@ -24,20 +26,8 @@ export default function Ad(): React.ReactNode {
   }, [adId]);
 
   return (
-    <Layout title="Ad">
-      <main className="main-content">
-        <p>Offre ID: {router.query.id}</p>
-        {ad ? (
-          <>
-            <h2>{ad.title}</h2>
-            <p>{ad.price} €</p>
-          </>
-        ) : adId ? (
-          "Chargement/erreur"
-        ) : (
-          "Il manque l'id dans l'URL"
-        )}
-      </main>
+    <Layout title="Nouvelle offre">
+      <main className="main-content">{ad && <AdForm ad={ad} />}</main>
     </Layout>
   );
 }
