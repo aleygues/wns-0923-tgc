@@ -1,8 +1,8 @@
-import { Arg, ID, Mutation, Query, Resolver, Int } from "type-graphql";
+import { Arg, ID, Mutation, Query, Resolver } from "type-graphql";
 import { Ad, AdCreateInput, AdUpdateInput, AdsWhere } from "../entities/Ad";
 import { validate } from "class-validator";
 import { In, Like, MoreThanOrEqual, LessThanOrEqual } from "typeorm";
-import { Tag } from "../entities/Tag";
+import { merge } from "../utils";
 
 @Resolver(Ad)
 export class AdsResolver {
@@ -90,17 +90,7 @@ export class AdsResolver {
     });
 
     if (ad) {
-      // we should keep existing relations
-      if (data.tags) {
-        data.tags = data.tags.map((entry) => {
-          const existingRelation = ad.tags.find(
-            (tag) => tag.id === Number(entry.id)
-          );
-          return existingRelation || entry;
-        });
-      }
-
-      Object.assign(ad, data);
+      merge(ad, data);
 
       const errors = await validate(ad);
       if (errors.length === 0) {
