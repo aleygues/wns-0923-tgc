@@ -7,7 +7,6 @@ export class AdsResolver {
   @Query(() => [Ad])
   async allAds(): Promise<Ad[]> {
     const ads = await Ad.find({ relations: { category: true, tags: true } });
-    console.log(ads);
     return ads;
   }
 

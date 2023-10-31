@@ -9,7 +9,6 @@ export class TagsResolver {
     const tags = await Tag.find({
       relations: { ads: true },
     });
-    console.log(tags);
     return tags;
   }
 
