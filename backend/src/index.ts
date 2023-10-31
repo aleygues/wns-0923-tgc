@@ -1,14 +1,15 @@
 import "reflect-metadata";
 import { dataSource } from "./datasource";
 import { buildSchema } from "type-graphql";
-import { TagsResolver } from "./resolvers/Tags";
 import { ApolloServer } from "@apollo/server";
 import { startStandaloneServer } from "@apollo/server/standalone";
 import { AdsResolver } from "./resolvers/Ads";
+import { TagsResolver } from "./resolvers/Tags";
+import { CategoriesResolver } from "./resolvers/Categories";
 
 async function start() {
   const schema = await buildSchema({
-    resolvers: [TagsResolver, AdsResolver],
+    resolvers: [TagsResolver, CategoriesResolver, AdsResolver],
   });
 
   const server = new ApolloServer({
