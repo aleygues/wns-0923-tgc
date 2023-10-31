@@ -13,6 +13,7 @@ import { Category } from "./Category";
 import { Tag } from "./Tag";
 import { Field, ID, InputType, Int, ObjectType } from "type-graphql";
 import { ObjectId } from "./ObjectId";
+import { IsExisting } from "../utils";
 
 @Entity()
 @ObjectType()
@@ -43,6 +44,7 @@ export class Ad extends BaseEntity {
 
   @ManyToOne(() => Category, (category) => category.ads)
   @Field(() => Category, { nullable: true })
+  @IsExisting(() => Category)
   category!: Category;
 
   @ManyToMany(() => Tag, (tag) => tag.ads)
