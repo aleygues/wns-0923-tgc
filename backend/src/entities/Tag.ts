@@ -25,3 +25,15 @@ export class Tag extends BaseEntity {
   @Field(() => [Ad])
   ads!: Ad[];
 }
+
+@InputType()
+export class TagCreateInput {
+  @Field()
+  name!: string;
+}
+
+@InputType()
+export class TagUpdateInput {
+  @Field({ nullable: true })
+  name!: string;
+}

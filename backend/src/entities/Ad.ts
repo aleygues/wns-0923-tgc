@@ -45,7 +45,7 @@ export class Ad extends BaseEntity {
   @Field(() => Category, { nullable: true })
   category!: Category;
 
-  @ManyToMany(() => Tag, (tag) => tag.ads)
+  @ManyToMany(() => Tag, (tag) => tag.ads, { cascade: ["remove"] })
   // check with SQLite extension! If you forget this following line, the
   // pivot table won't be generated
   @JoinTable()
@@ -58,7 +58,7 @@ export class Ad extends BaseEntity {
 }
 
 @InputType()
-export class AdInput {
+export class AdCreateInput {
   @Field()
   title!: string;
 
@@ -76,4 +76,40 @@ export class AdInput {
 
   @Field(() => [ObjectId])
   tags!: ObjectId[];
+}
+
+@InputType()
+export class AdUpdateInput {
+  @Field({ nullable: true })
+  title!: string;
+
+  @Field(() => Int, { nullable: true })
+  price!: number;
+
+  @Field({ nullable: true })
+  imgUrl!: string;
+
+  @Field({ nullable: true })
+  description!: string;
+
+  @Field({ nullable: true })
+  category!: ObjectId;
+
+  @Field(() => [ObjectId], { nullable: true })
+  tags!: ObjectId[];
+}
+
+@InputType()
+export class AdsWhere {
+  @Field(() => [ID], { nullable: true })
+  categoryIn?: number[];
+
+  @Field(() => String, { nullable: true })
+  searchTitle?: string;
+
+  @Field(() => Int, { nullable: true })
+  priceGte?: number;
+
+  @Field(() => Int, { nullable: true })
+  priceLte?: number;
 }
