@@ -1,15 +1,29 @@
-import { useEffect, useState } from "react";
-import { AdCard, AdCardProps, AdType } from "./AdCard";
-import axios from "axios";
-import { API_URL } from "@/config";
+import { useState } from "react";
+import { AdCard, AdType } from "./AdCard";
+import { gql, useQuery } from "@apollo/client";
 
 type RecentAdsProps = {
   categoryId?: number;
   searchWord?: string;
 };
 
+export const queryAllAds = gql`
+  query ads {
+    items: allAds {
+      id
+      title
+      price
+      imgUrl
+      description
+      category {
+        id
+        name
+      }
+    }
+  }
+`;
+
 export function RecentAds(props: RecentAdsProps): React.ReactNode {
-  const [ads, setAds] = useState([] as AdCardProps[]);
   const [totalPrice, setTotalPrice] = useState(0);
 
   function addToTotal(price: number) {
@@ -17,7 +31,7 @@ export function RecentAds(props: RecentAdsProps): React.ReactNode {
     setTotalPrice(newTotalPrice);
   }
 
-  async function fetchAds() {
+  /* async function fetchAds() {
     // be careful here, I'm injected a category ID filter
     // but it depends on how you implement your filter on your API
     let url = `${API_URL}/ads?`;
@@ -30,14 +44,23 @@ export function RecentAds(props: RecentAdsProps): React.ReactNode {
       url += `searchTitle=${props.searchWord}&`;
     }
 
-    const result = await axios.get(url);
-    setAds(result.data);
-  }
+    //const result = await axios.get(url);
+    //setAds(result.data);
+  } */
 
-  useEffect(() => {
+  /* useEffect(() => {
     // mounting
     fetchAds();
-  }, [props.categoryId, props.searchWord]);
+  }, [props.categoryId, props.searchWord]); */
+
+  const { data, error, loading, refetch } = useQuery<{ items: AdType[] }>(queryAllAds);
+  const ads = data ? data.items : [];
+
+  function fetchAds() {
+    // this refetch could be used
+    // but we prefer to apply refetchQueries option on the mutation
+    //refetch();
+  }
 
   return (
     <main className="main-content">
@@ -52,6 +75,8 @@ export function RecentAds(props: RecentAdsProps): React.ReactNode {
               price={item.price}
               imgUrl={item.imgUrl}
               link={`/ads/${item.id}`}
+              description={item.description}
+              category={item.category}
               onDelete={fetchAds}
             />
             <button

@@ -9,7 +9,6 @@ import { ObjectId } from "./entities/ObjectId";
 export function merge(entity: any, data: any): any {
   // should keep existing relations
   for (const [key, value] of Object.entries(data)) {
-    console.log(value);
     if (
       Array.isArray(value) &&
       value.length > 0 &&

@@ -1,10 +1,10 @@
 import React from "react";
 import Link from "next/link";
 import { Category, CategoryType } from "./Category";
-import { useEffect, useState } from "react";
-import axios from "axios";
-import { API_URL } from "@/config";
+import { useState } from "react";
 import { useRouter } from "next/router";
+import { useQuery } from "@apollo/client";
+import { queryAllCategories } from "@/graphql/queryAllCategories";
 
 export function Header(): React.ReactNode {
   const [searchWord, setSearchWord] = useState("");
@@ -14,17 +14,10 @@ export function Header(): React.ReactNode {
     router.push(`/?searchWord=${searchWord.trim()}`);
   }
 
-  const [categories, setCategories] = useState<CategoryType[]>([]);
-
-  async function fetchCategories() {
-    const result = await axios.get<CategoryType[]>(`${API_URL}/categories`);
-    setCategories(result.data);
-  }
-
-  useEffect(() => {
-    // mounting
-    fetchCategories();
-  }, []);
+  const { data, error, loading } = useQuery<{ items: CategoryType[] }>(
+    queryAllCategories
+  );
+  const categories = data ? data.items : [];
 
   return (
     <header className="header">
@@ -62,6 +55,7 @@ export function Header(): React.ReactNode {
         </Link>
       </div>
       <nav className="categories-navigation">
+        {loading === true && <p>Chargement</p>}
         {categories.map((category, index) => (
           <React.Fragment key={category.id}>
             <Category name={category.name} id={category.id} />{" "}

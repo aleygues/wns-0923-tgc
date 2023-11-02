@@ -1,6 +1,8 @@
 import { API_URL } from "@/config";
 import axios from "axios";
 import { CategoryType } from "./Category";
+import { gql, useMutation } from "@apollo/client";
+import { queryAllAds } from "./RecentAds";
 
 export type AdType = {
   id: number;
@@ -12,13 +14,31 @@ export type AdType = {
   category: CategoryType | null;
 };
 
+const mutationDeleteAd = gql`
+  mutation deleteAd($id: ID!) {
+    deleteAd(id: $id) {
+      id
+      title
+    }
+  }
+`;
+
 export type AdCardProps = AdType & {
   onDelete?: () => void;
 };
 
 export function AdCard(props: AdCardProps): React.ReactNode {
+  const [doDelete] = useMutation(mutationDeleteAd, {
+    refetchQueries: [queryAllAds],
+  });
+
   async function deleteAd() {
-    await axios.delete(`${API_URL}/ads/${props.id}`);
+    await doDelete({
+      variables: {
+        id: props.id,
+      },
+    });
+
     if (props.onDelete) {
       props.onDelete();
     }
