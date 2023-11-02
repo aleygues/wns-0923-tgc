@@ -1,28 +1,22 @@
+/* eslint-disable react/no-unescaped-entities */
 import { AdType } from "@/components/AdCard";
 import { Layout } from "@/components/Layout";
-import { API_URL } from "@/config";
-import axios from "axios";
+import { queryAd } from "@/graphql/queryAd";
+import { useQuery } from "@apollo/client";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
 
 export default function Ad(): React.ReactNode {
-  const [ad, setAd] = useState<AdType>();
-
   const router = useRouter();
   const adId = router.query.id;
 
-  async function fetchAd() {
-    const result = await axios.get<AdType>(`${API_URL}/ads/${adId}`);
-    setAd(result.data);
-  }
-
-  useEffect(() => {
-    // mounting
-    if (typeof adId === "string") {
-      fetchAd();
-    }
-  }, [adId]);
+  const { data } = useQuery<{ item: AdType }>(queryAd, {
+    variables: {
+      id: adId,
+    },
+    skip: adId === undefined,
+  });
+  const ad = data ? data.item : null;
 
   return (
     <Layout title="Ad">

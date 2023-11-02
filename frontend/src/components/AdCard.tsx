@@ -1,8 +1,7 @@
-import { API_URL } from "@/config";
-import axios from "axios";
 import { CategoryType } from "./Category";
 import { gql, useMutation } from "@apollo/client";
 import { queryAllAds } from "./RecentAds";
+import Link from "next/link";
 
 export type AdType = {
   id: number;
@@ -47,13 +46,13 @@ export function AdCard(props: AdCardProps): React.ReactNode {
 
   return (
     <div className="ad-card-container">
-      <a className="ad-card-link" href={props.link}>
+      <Link className="ad-card-link" href={props.link}>
         <img className="ad-card-image" src={props.imgUrl} />
         <div className="ad-card-text">
           <div className="ad-card-title">{props.title}</div>
           <div className="ad-card-price">{props.price} €</div>
         </div>
-      </a>
+      </Link>
       {props.onDelete && <button onClick={deleteAd}>Supprimer</button>}
     </div>
   );

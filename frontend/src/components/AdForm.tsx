@@ -2,10 +2,14 @@
 import { AdType } from "@/components/AdCard";
 import { CategoryType } from "@/components/Category";
 import { Layout } from "@/components/Layout";
-import { API_URL } from "@/config";
-import axios from "axios";
+import { mutationCreateAd } from "@/graphql/mutationCreateAd";
+import { mutationUpdateAd } from "@/graphql/mutationUpdateAd";
+import { queryAd } from "@/graphql/queryAd";
+import { queryAllCategories } from "@/graphql/queryAllCategories";
+import { useMutation, useQuery } from "@apollo/client";
 import { useRouter } from "next/router";
 import { FormEvent, useEffect, useState } from "react";
+import { queryAllAds } from "./RecentAds";
 
 type AdFormData = {
   title: string;
@@ -20,7 +24,6 @@ type AdFormProps = {
 };
 
 export default function AdForm(props: AdFormProps) {
-  const [categories, setCategories] = useState<CategoryType[]>([]);
   const [error, setError] = useState<"title" | "price">();
 
   const [title, setTitle] = useState("");
@@ -29,17 +32,27 @@ export default function AdForm(props: AdFormProps) {
   const [price, setPrice] = useState(0);
   const [categoryId, setCategoryId] = useState<null | number>(null);
 
-  async function fetchCategories() {
-    const result = await axios.get<CategoryType[]>(`${API_URL}/categories`);
-    setCategories(result.data);
-  }
+  const {
+    data: categoriesData,
+    error: categoriesError,
+    loading: categoriesLoading,
+  } = useQuery<{ items: CategoryType[] }>(queryAllCategories);
+  const categories = categoriesData ? categoriesData.items : [];
 
-  useEffect(() => {
-    // mounting
-    fetchCategories();
-  }, []);
+  /* const { data: tagsData, error: tagsError, loading: tagsLoading } = useQuery<{ items: TagType[] }>(
+    queryAllTags
+  );
+  const tags = tagsData ? tagsData.items : []; */
 
   const router = useRouter();
+
+  const [doCreate, { loading: createLoading }] = useMutation(mutationCreateAd, {
+    refetchQueries: [queryAllAds],
+  });
+  const [doUpdate, { loading: updateLoading }] = useMutation(mutationUpdateAd, {
+    refetchQueries: [queryAd, queryAllAds],
+  });
+  const loading = createLoading || updateLoading;
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -58,13 +71,22 @@ export default function AdForm(props: AdFormProps) {
       setError("price");
     } else {
       if (!props.ad) {
-        const result = await axios.post(`${API_URL}/ads`, data);
-        if ("id" in result.data) {
-          router.replace(`/ads/${result.data.id}`);
+        const result = await doCreate({
+          variables: {
+            data: data,
+          },
+        });
+        if ("id" in result.data?.item) {
+          router.replace(`/ads/${result.data.item.id}`);
         }
       } else {
-        const result = await axios.patch(`${API_URL}/ads/${props.ad.id}`, data);
-        if (result.status >= 200 && result.status < 300) {
+        const result = await doUpdate({
+          variables: {
+            id: props.ad?.id,
+            data: data,
+          },
+        });
+        if (!result.errors?.length) {
           router.replace(`/ads/${props.ad.id}`);
         }
       }
@@ -139,7 +161,9 @@ export default function AdForm(props: AdFormProps) {
           </select>
           <br />
           <br />
-          <button type="submit">{props.ad ? "Modifier" : "Créer"}</button>
+          <button type="submit" disabled={loading}>
+            {props.ad ? "Modifier" : "Créer"}
+          </button>
         </form>
       </main>
     </Layout>
