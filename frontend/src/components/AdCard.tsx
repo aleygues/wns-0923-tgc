@@ -31,6 +31,7 @@ export function AdCard(props: AdCardProps): React.ReactNode {
     refetchQueries: [queryAllAds],
   });
 
+
   async function deleteAd() {
     await doDelete({
       variables: {

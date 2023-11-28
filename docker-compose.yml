@@ -1,0 +1,16 @@
+services:
+  backend:
+    build: ./backend
+    ports:
+      - 5000:5000 # local:container
+    volumes:
+      - ./backend/src:/app/src
+    env_file: ./backend/.env
+  db:
+    image: postgres
+    ports:
+      - 5433:5432 # local:container
+    volumes:
+      - /var/lib/postgresql/data
+    env_file: .env
+
