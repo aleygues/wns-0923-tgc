@@ -1,6 +1,8 @@
 services:
   backend:
-    build: ./backend
+    build: 
+      context: ./backend
+      target: dev
     ports:
       - 5000:5000 # local:container
     volumes:
@@ -13,9 +15,11 @@ services:
     volumes:
       - /var/lib/postgresql/data
     env_file: .env
+  # # uncomment the lines bellow to activate the dockerized frontend for dev
   # frontend:
-  #   build: ./frontend
-  #   command: npm run dev
+  #   build: 
+  #     context: ./frontend
+  #     target: dev
   #   ports:
   #     - 3001:3000 # local:container
   #   volumes:

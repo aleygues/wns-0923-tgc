@@ -56,7 +56,7 @@ export function RecentAds(props: RecentAdsProps): React.ReactNode {
       <br />
       <br />
       <p>
-        Page actuelle : {page} ; nombre total d'éléments : {count}
+        Page actuelle : {page} ; nombre total éléments : {count}
       </p>
       <button
         disabled={page === 0}
