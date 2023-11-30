@@ -4,6 +4,30 @@ import { validate } from "class-validator";
 import { In, Like, MoreThanOrEqual, LessThanOrEqual } from "typeorm";
 import { merge } from "../utils";
 
+export function getAdQueryWhere(graphqlWhere?: AdsWhere): {
+  [key: string]: unknown;
+} {
+  const where: any = {};
+
+  if (graphqlWhere?.categoryIn) {
+    where.category = { id: In(graphqlWhere.categoryIn) };
+  }
+
+  if (graphqlWhere?.searchTitle) {
+    where.title = Like(`%${graphqlWhere.searchTitle}%`);
+  }
+
+  if (graphqlWhere?.priceGte) {
+    where.price = MoreThanOrEqual(Number(graphqlWhere.priceGte));
+  }
+
+  if (graphqlWhere?.priceLte) {
+    where.price = LessThanOrEqual(Number(graphqlWhere.priceLte));
+  }
+
+  return where;
+}
+
 @Resolver(Ad)
 export class AdsResolver {
   @Query(() => [Ad])
@@ -12,23 +36,7 @@ export class AdsResolver {
     @Arg("take", () => Int, { nullable: true }) take?: number,
     @Arg("skip", () => Int, { nullable: true }) skip?: number
   ): Promise<Ad[]> {
-    const queryWhere: any = {};
-
-    if (where?.categoryIn) {
-      queryWhere.category = { id: In(where.categoryIn) };
-    }
-
-    if (where?.searchTitle) {
-      queryWhere.title = Like(`%${where.searchTitle}%`);
-    }
-
-    if (where?.priceGte) {
-      queryWhere.price = MoreThanOrEqual(Number(where.priceGte));
-    }
-
-    if (where?.priceLte) {
-      queryWhere.price = LessThanOrEqual(Number(where.priceLte));
-    }
+    const queryWhere = getAdQueryWhere(where);
 
     /* const order: any = {};
     if (
@@ -62,24 +70,7 @@ export class AdsResolver {
   async allAdsCount(
     @Arg("where", { nullable: true }) where?: AdsWhere
   ): Promise<number> {
-    const queryWhere: any = {};
-
-    if (where?.categoryIn) {
-      queryWhere.category = { id: In(where.categoryIn) };
-    }
-
-    if (where?.searchTitle) {
-      queryWhere.title = Like(`%${where.searchTitle}%`);
-    }
-
-    if (where?.priceGte) {
-      queryWhere.price = MoreThanOrEqual(Number(where.priceGte));
-    }
-
-    if (where?.priceLte) {
-      queryWhere.price = LessThanOrEqual(Number(where.priceLte));
-    }
-
+    const queryWhere = getAdQueryWhere(where);
     const count = await Ad.count({
       where: queryWhere,
     });

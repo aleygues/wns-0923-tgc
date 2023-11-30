@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { AdCard, AdType } from "./AdCard";
 import { gql, useQuery } from "@apollo/client";
 
@@ -45,18 +45,28 @@ export function RecentAds(props: RecentAdsProps): React.ReactNode {
 
   const pagesCount = Math.ceil(count / pageSize);
 
+  // this function ensure that we do not stay blocked on an empty page due
+  // to a page size change
+  function onPageSizeChange(newValue: number) {
+    const newPagesCount = Math.ceil(count / newValue);
+    if (page >= newPagesCount) {
+      setPage(Math.max(newPagesCount - 1, 0));
+    }
+    setPageSize(newValue);
+  }
+
   return (
     <main className="main-content">
       <h2>Annonces récentes</h2>
       <p>Prix total des offres sélectionnées : {totalPrice}€</p>
       <p>Nombre de résultats par page ?</p>
-      <button onClick={() => setPageSize(5)}>5</button>
-      <button onClick={() => setPageSize(10)}>10</button>
-      <button onClick={() => setPageSize(20)}>20</button>
+      <button onClick={() => onPageSizeChange(5)}>5</button>
+      <button onClick={() => onPageSizeChange(10)}>10</button>
+      <button onClick={() => onPageSizeChange(20)}>20</button>
       <br />
       <br />
       <p>
-        Page actuelle : {page} ; nombre total d'éléments : {count}
+        Page actuelle : {page + 1} ; nombre total éléments : {count}
       </p>
       <button
         disabled={page === 0}
