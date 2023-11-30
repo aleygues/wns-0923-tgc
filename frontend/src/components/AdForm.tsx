@@ -17,6 +17,7 @@ type AdFormData = {
   imgUrl: string;
   price: number;
   category: { id: number } | null;
+  tags: any[];
 };
 
 type AdFormProps = {
@@ -63,6 +64,7 @@ export default function AdForm(props: AdFormProps) {
       imgUrl,
       price,
       category: categoryId ? { id: Number(categoryId) } : null,
+      tags: [],
     };
 
     if (data.title.trim().length < 3) {
@@ -99,9 +101,13 @@ export default function AdForm(props: AdFormProps) {
       setDescription(props.ad.description);
       setPrice(props.ad.price);
       setImgUrl(props.ad.imgUrl);
-      setCategoryId(props.ad.category ? props.ad.category.id : null);
+      setCategoryId(
+        props.ad.category ? props.ad.category.id : categories[0]?.id
+      );
+    } else if (categories.length > 0) {
+      setCategoryId(categories[0].id);
     }
-  }, [props.ad]);
+  }, [props.ad, categories]);
 
   return (
     <Layout title="Nouvelle offre">
