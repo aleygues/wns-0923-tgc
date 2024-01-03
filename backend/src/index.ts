@@ -6,10 +6,13 @@ import { startStandaloneServer } from "@apollo/server/standalone";
 import { AdsResolver } from "./resolvers/Ads";
 import { TagsResolver } from "./resolvers/Tags";
 import { CategoriesResolver } from "./resolvers/Categories";
+import { UsersResolver } from "./resolvers/Users";
+import { customAuthChecker } from "./auth";
 
 async function start() {
   const schema = await buildSchema({
-    resolvers: [TagsResolver, CategoriesResolver, AdsResolver],
+    resolvers: [TagsResolver, CategoriesResolver, AdsResolver, UsersResolver],
+    authChecker: customAuthChecker,
   });
 
   const server = new ApolloServer({
@@ -20,6 +23,12 @@ async function start() {
   await startStandaloneServer(server, {
     listen: {
       port: 5000,
+    },
+    context: async (args) => {
+      return {
+        req: args.req,
+        res: args.res,
+      };
     },
   });
 
