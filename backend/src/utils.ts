@@ -1,4 +1,22 @@
+import { MiddlewareFn } from "type-graphql";
 import { ObjectId } from "./entities/ObjectId";
+import { ContextType } from "./auth";
+
+/**
+ * This middle should be used on some user entity fields to make them private to the
+ * current user
+ * You should apply @Authorized on top of this middleware
+ */
+export const UserPrivateField: MiddlewareFn<ContextType> = async (
+  { args, root, context },
+  next
+) => {
+  if (context?.user?.id === root?.id) {
+    return next();
+  } else {
+    return "";
+  }
+};
 
 /**
  * Merge some data on an existing database entity, it takes care of keeping existing many-to-many relations to avoid unicity constraints

@@ -6,8 +6,16 @@ import {
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { IsEmail, Matches } from "class-validator";
-import { Field, ID, InputType, ObjectType } from "type-graphql";
+import {
+  Authorized,
+  Field,
+  ID,
+  InputType,
+  ObjectType,
+  UseMiddleware,
+} from "type-graphql";
 import { Ad } from "./Ad";
+import { UserPrivateField } from "../utils";
 
 @Entity()
 @ObjectType()
@@ -17,6 +25,8 @@ export class User extends BaseEntity {
   id!: number;
 
   @Column({ length: 255, unique: true })
+  @Authorized()
+  @UseMiddleware(UserPrivateField)
   @Field()
   email!: string;
 

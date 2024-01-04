@@ -13,6 +13,7 @@ export const customAuthChecker: AuthChecker<ContextType> = async (
   { root, args, context, info },
   roles
 ) => {
+  // may be recalled if called on field
   const cookies = new Cookies(context.req, context.res);
   const token = cookies.get("token");
 

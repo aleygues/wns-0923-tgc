@@ -36,6 +36,17 @@ export class UsersResolver {
     return context.user as User;
   }
 
+  @Mutation(() => Boolean)
+  async signout(@Ctx() context: ContextType): Promise<boolean> {
+    const cookies = new Cookies(context.req, context.res);
+    cookies.set("token", "", {
+      httpOnly: true,
+      secure: false,
+      maxAge: 0,
+    });
+    return true;
+  }
+
   @Mutation(() => User)
   async signup(
     @Arg("data", () => UserCreateInput) data: UserCreateInput
