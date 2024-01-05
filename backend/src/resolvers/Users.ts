@@ -12,7 +12,7 @@ import { validate } from "class-validator";
 import argon2 from "argon2";
 import jwt from "jsonwebtoken";
 import Cookies from "cookies";
-import { ContextType } from "../auth";
+import { ContextType, getUserFromReq } from "../auth";
 
 @Resolver(User)
 export class UsersResolver {
@@ -30,10 +30,10 @@ export class UsersResolver {
     return user;
   }
 
-  @Authorized()
-  @Query(() => User)
-  async me(@Ctx() context: ContextType): Promise<User> {
-    return context.user as User;
+  // @Authorized() removed to avoid error
+  @Query(() => User, { nullable: true })
+  async me(@Ctx() context: ContextType): Promise<User | null> {
+    return getUserFromReq(context.req, context.res);
   }
 
   @Mutation(() => Boolean)

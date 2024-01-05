@@ -1,5 +1,6 @@
 import { queryMe } from "@/graphql/queryMe";
 import "@/styles/globals.css";
+import { UserType } from "@/types";
 import {
   ApolloClient,
   ApolloProvider,
@@ -25,22 +26,27 @@ const client = new ApolloClient({
 const publicPages = ["/", "/signin", "/signup", "/ads/[id]"];
 
 function Auth(props: { children: React.ReactNode }) {
-  const { data, loading, error } = useQuery(queryMe);
+  const { data, loading } = useQuery<{ item: UserType | null }>(queryMe);
   const router = useRouter();
 
   useEffect(() => {
     console.log("Navigating, new path =>", router.pathname);
     if (publicPages.includes(router.pathname) === false) {
       console.log("Seems to be a private page");
-      if (error) {
+      if (!data?.item) {
         console.log("Not connected, redirecting");
         router.replace("/signin");
       }
     }
-  }, [router, error]);
+  }, [router, data]);
 
   if (loading) {
     return <p>Chargement</p>;
+  }
+
+  // it
+  if (publicPages.includes(router.pathname) === false && !data?.item) {
+    return <p>Redirection</p>;
   }
 
   return props.children;

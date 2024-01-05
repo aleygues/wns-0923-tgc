@@ -5,10 +5,8 @@ import { useQuery } from "@apollo/client";
 
 export default function Me(): React.ReactNode {
   // to use to get current user
-  const { data: meData, error: meError } = useQuery<{ item: UserType }>(
-    queryMe
-  );
-  const me = meError ? undefined : meData?.item;
+  const { data: meData } = useQuery<{ item: UserType | null }>(queryMe);
+  const me = meData?.item;
 
   return (
     <Layout title="Mon profile">
