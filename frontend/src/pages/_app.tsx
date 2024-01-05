@@ -31,20 +31,25 @@ function Auth(props: { children: React.ReactNode }) {
 
   useEffect(() => {
     console.log("Navigating, new path =>", router.pathname);
-    if (publicPages.includes(router.pathname) === false) {
-      console.log("Seems to be a private page");
-      if (!data?.item) {
-        console.log("Not connected, redirecting");
-        router.replace("/signin");
+    if (loading === false) {
+      if (publicPages.includes(router.pathname) === false) {
+        console.log("Seems to be a private page");
+        if (!data?.item) {
+          console.log("Not connected, redirecting");
+          router.replace("/signin");
+        }
       }
+    } else {
+      console.log(
+        "Cannot decide to redirect or not since we are loading the current user"
+      );
     }
-  }, [router, data]);
+  }, [router, data, loading]);
 
   if (loading) {
     return <p>Chargement</p>;
   }
 
-  // it
   if (publicPages.includes(router.pathname) === false && !data?.item) {
     return <p>Redirection</p>;
   }
