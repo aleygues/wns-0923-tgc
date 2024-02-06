@@ -105,6 +105,7 @@ export class AdsResolver {
     @Arg("data", () => AdCreateInput) data: AdCreateInput
   ): Promise<Ad> {
     const newAd = new Ad();
+
     Object.assign(newAd, data, {
       createdBy: context.user,
     });

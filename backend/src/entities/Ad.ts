@@ -14,6 +14,7 @@ import { Tag } from "./Tag";
 import { Field, ID, InputType, Int, ObjectType } from "type-graphql";
 import { ObjectId } from "./ObjectId";
 import { User } from "./User";
+import { computeDistanceInSeconds } from "../helpers";
 
 @Entity()
 @ObjectType()
@@ -52,6 +53,11 @@ export class Ad extends BaseEntity {
   @JoinTable()
   @Field(() => [Tag])
   tags!: Tag[];
+
+  @Field(() => Int)
+  get onlineSince() {
+    return computeDistanceInSeconds(this.createdAt, new Date());
+  }
 
   @CreateDateColumn()
   @Field()
