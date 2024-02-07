@@ -5,9 +5,42 @@ import { dataSourceOptions } from "../src/datasource";
 import { DataSource } from "typeorm";
 import { mutationSignup } from "./graphql/mutationSignup";
 import { mutationSignin } from "./graphql/mutationSignin";
+import { User } from "../src/entities/User";
+import { serialize, parse } from "cookie";
+import { queryMe } from "./graphql/queryMe";
+
+function mockContext(token?: string) {
+  const value: { context: any; token?: string } = {
+    token,
+    context: {
+      req: {
+        headers: {
+          cookie: token ? serialize("token", token) : undefined,
+        },
+        connection: { encrypted: false },
+      },
+      res: {
+        getHeader: () => "",
+        setHeader: (key: string, cookieValue: string | string[]) => {
+          if (key === "Set-Cookie") {
+            const parsedValue = parse(
+              Array.isArray(cookieValue) ? cookieValue[0] : cookieValue
+            );
+            if (parsedValue.token) {
+              value.token = parsedValue.token;
+            }
+          }
+        },
+        headers: {},
+      },
+    },
+  };
+  return value;
+}
 
 let schema: GraphQLSchema;
 let dataSource: DataSource;
+let token: string | undefined;
 
 beforeAll(async () => {
   schema = await getSchema();
@@ -20,6 +53,7 @@ beforeAll(async () => {
     password: "supersecret",
     database: "thegoodcorner",
     dropSchema: true,
+    logging: false,
   });
 
   await dataSource.initialize();
@@ -42,6 +76,9 @@ describe("users resolvers", () => {
       },
     })) as any;
     expect(result?.data?.signup?.id).toBe("1");
+    const user = await User.findOneBy({ id: result?.data?.signup?.id });
+    expect(!!user).toBe(true);
+    expect(user?.hashedPassword !== "supersecret").toBe(true);
   });
   it("cannot creates the same user", async () => {
     const result = (await graphql({
@@ -57,6 +94,7 @@ describe("users resolvers", () => {
     expect(!!result.errors).toBe(true);
   });
   it("sign in with the user", async () => {
+    const mock = mockContext();
     const result = (await graphql({
       schema,
       source: print(mutationSignin),
@@ -64,9 +102,29 @@ describe("users resolvers", () => {
         email: "test1@gmail.com",
         password: "supersecret",
       },
+      contextValue: mock.context,
     })) as any;
-    console.log(result);
     expect(result?.data?.signin?.id).toBe("1");
+    expect(!!mock.token).toBe(true);
+    token = mock.token;
   });
-  // test get me
+  it("returns null if not connected", async () => {
+    const mock = mockContext();
+    const result = (await graphql({
+      schema,
+      source: print(queryMe),
+      contextValue: mock.context,
+    })) as any;
+    expect(result?.data?.me).toBeNull();
+  });
+  it("returns the profile if connected", async () => {
+    const mock = mockContext(token);
+    const result = (await graphql({
+      schema,
+      source: print(queryMe),
+      contextValue: mock.context,
+    })) as any;
+    expect(result?.data?.me.id).toBeTruthy();
+    expect(result?.data?.me.email).toBeTruthy();
+  });
 });
