@@ -93,7 +93,7 @@ export class AdsResolver {
   async ad(@Arg("id", () => ID) id: number): Promise<Ad | null> {
     const ad = await Ad.findOne({
       where: { id: id },
-      relations: { category: true, tags: true },
+      relations: { category: true, tags: true, createdBy: true },
     });
     return ad;
   }
