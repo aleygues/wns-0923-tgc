@@ -21,6 +21,7 @@ jobs:
         id: docker_build
         uses: docker/build-push-action@v2
         with:
+          context: ./backend
           push: true
           tags: ${{ secrets.DOCKERHUB_REPO }}:latest
       - name: Image digest
