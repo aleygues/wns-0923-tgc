@@ -5,7 +5,16 @@ on:
     branches: master
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+      - name: Goto backend and run tests
+        run: cd backend && npm i && npm test
   docker:
+    needs: test
+    if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
