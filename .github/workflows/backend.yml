@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Skip tests
-        if: needs.check.outputs.has-changes == 'true'
+        if: needs.check.outputs.has-changes == 'false'
         run: exit 0;
       - name: Check out code
         uses: actions/checkout@v4
@@ -31,7 +31,7 @@ jobs:
         run: cd backend && npm i && npm test
   docker:
     needs: test
-    if: github.ref == 'refs/heads/master' && needs.check.outputs.has-changes == 'true'
+    if: github.ref == 'refs/heads/master' && needs.check.outputs.has-changes == 'false'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
