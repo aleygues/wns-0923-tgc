@@ -1,4 +1,4 @@
-name: Backend
+name: Frontend
 
 on:
   push:
@@ -9,8 +9,8 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v4
-      - name: Goto backend and run tests
-        run: cd backend && npm i && npm test
+      - name: Goto frontend and run tests
+        run: cd frontend && npm i && npm test
   docker:
     needs: test
     if: github.ref == 'refs/heads/master'
@@ -30,6 +30,6 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
-          context: ./backend
+          context: ./frontend
           push: true
-          tags: ${{ secrets.DOCKERHUB_REPO_BACKEND }}:latest
+          tags: ${{ secrets.DOCKERHUB_REPO_FRONTEND }}:latest
