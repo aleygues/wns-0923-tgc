@@ -2,20 +2,34 @@ name: Backend
 
 on:
   push:
-    paths:
-      - "backend/**"
 
 jobs:
+  has-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      has-changes: ${{ steps.changes.outputs.src }}
+    steps:
+      - name: Checking for folder changes
+        uses: dorny/paths-filter@v3
+        id: changes
+        with:
+          filters: |
+            src:
+              - 'src/**'
   test:
+    needs: has-changes
     runs-on: ubuntu-latest
     steps:
+      - name: Skip tests
+        if: needs.check.outputs.has-changes == 'true'
+        run: exit 0;
       - name: Check out code
         uses: actions/checkout@v4
       - name: Goto backend and run tests
         run: cd backend && npm i && npm test
   docker:
     needs: test
-    if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/master' && needs.check.outputs.has-changes == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
