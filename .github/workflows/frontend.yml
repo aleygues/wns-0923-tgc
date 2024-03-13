@@ -34,4 +34,4 @@ jobs:
         with:
           context: ./frontend
           push: true
-          tags: ${{ secrets.DOCKERHUB_REPO_FRONTEND }}:latest
+          tags: ${{ secrets.DOCKERHUB_REPO_FRONTEND }}:latest, ${{ secrets.DOCKERHUB_REPO_BACKEND }}:${{ github.sha }}
