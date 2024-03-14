@@ -5,6 +5,7 @@ services:
       - 5000:5000 # local:container
     volumes:
       - ./backend/src:/app/src
+      - ./uploads:/app/uploads
     env_file: ./backend/.env
   db:
     image: postgres

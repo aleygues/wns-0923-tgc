@@ -8,6 +8,7 @@ import express from "express";
 import http from "http";
 import cors from "cors";
 import { getSchema } from "./schema";
+import { initializeRoutes } from "./routes";
 
 async function start() {
   await dataSource.initialize();
@@ -23,6 +24,8 @@ async function start() {
   });
 
   await server.start();
+
+  initializeRoutes(app);
 
   app.use(
     "/",

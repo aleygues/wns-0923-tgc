@@ -4,10 +4,11 @@ import { Ad } from "./entities/Ad";
 import { Tag } from "./entities/Tag";
 import { User } from "./entities/User";
 import { PostgresConnectionOptions } from "typeorm/driver/postgres/PostgresConnectionOptions";
+import { Image } from "./entities/Image";
 
 export const dataSourceOptions: PostgresConnectionOptions = {
   type: "postgres",
-  entities: [Category, Ad, Tag, User],
+  entities: [Category, Ad, Tag, User, Image],
   synchronize: true,
   logging: true,
   host: process.env.DB_HOST ?? "db",

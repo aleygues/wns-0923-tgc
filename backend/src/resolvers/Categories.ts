@@ -10,7 +10,9 @@ import { validate } from "class-validator";
 export class CategoriesResolver {
   @Query(() => [Category])
   async allCategories(): Promise<Category[]> {
-    const categories = await Category.find({ relations: { ads: true } });
+    const categories = await Category.find({
+      relations: { ads: true, image: true },
+    });
     return categories;
   }
 
@@ -18,7 +20,7 @@ export class CategoriesResolver {
   async category(@Arg("id", () => ID) id: number): Promise<Category | null> {
     const category = await Category.findOne({
       where: { id: id },
-      relations: { ads: true },
+      relations: { ads: true, image: true },
     });
     return category;
   }
