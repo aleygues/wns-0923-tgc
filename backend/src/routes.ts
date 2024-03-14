@@ -2,6 +2,8 @@ import multer from "multer";
 import { Express } from "express";
 import { Image } from "./entities/Image";
 import sharp from "sharp";
+import mime from "mime";
+import cors from "cors";
 
 /**
  * 1 - X support upload
@@ -17,13 +19,11 @@ export function initializeRoutes(app: Express) {
   const storage = multer.memoryStorage();
   const upload = multer({ storage: storage });
 
-  /*   let mime: any;
-  import("mime").then((m) => (mime = m.default)); */
+  app.use("/api", cors());
 
   app.post("/api/images", upload.single("file"), async (req, res) => {
     if (req.file && req.file.mimetype.startsWith("image/")) {
-      /* const extension = mime.getExtension(req.file.mimetype); */
-      const extension = req.file.originalname.split(".").pop();
+      const extension = mime.getExtension(req.file.mimetype);
       const filename = `${Date.now()}-${
         Math.log(Math.random() * 8999) + 1000
       }.${extension}`;
@@ -37,7 +37,13 @@ export function initializeRoutes(app: Express) {
       newImage.originalName = req.file.originalname;
       newImage.path = `/app/uploads/${filename}`;
       await newImage.save();
-      res.json({ success: true, image: newImage });
+      res.json({
+        success: true,
+        image: {
+          id: newImage.id,
+          uri: newImage.uri,
+        },
+      });
     } else {
       res.json({ success: false });
     }
