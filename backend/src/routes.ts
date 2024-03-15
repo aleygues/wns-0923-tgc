@@ -10,7 +10,7 @@ import cors from "cors";
  * 2 - X new entity image + relation
  * 3 - X read images
  * 4 - X resize image on upload
- * 5 - frontend part
+ * 5 - X frontend part
  * 6 - use minio
  * 7 - use imgproxy/thumbor
  */
