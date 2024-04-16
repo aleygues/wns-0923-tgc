@@ -80,7 +80,11 @@ export function Header(): React.ReactNode {
         {loading === true && <p>Chargement</p>}
         {categories.map((category, index) => (
           <React.Fragment key={category.id}>
-            <Category name={category.name} id={category.id} />{" "}
+            <Category
+              name={category.name}
+              id={category.id}
+              image={category.image}
+            />{" "}
             {index < categories.length - 1 && "•"}
           </React.Fragment>
         ))}

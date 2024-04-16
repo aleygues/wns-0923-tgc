@@ -3,6 +3,7 @@ import Link from "next/link";
 export type CategoryType = {
   id: number;
   name: string;
+  image: { uri: string; id: number };
 };
 
 export type CategoryProps = CategoryType;
