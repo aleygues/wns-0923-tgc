@@ -57,7 +57,7 @@ export function RecentAds(props: RecentAdsProps): React.ReactNode {
 
   return (
     <main className="main-content">
-      <h2>Annonces récentes</h2>
+      <h2>Super annonces !</h2>
       <p>Prix total des offres sélectionnées : {totalPrice}€</p>
       <p>Nombre de résultats par page ?</p>
       <button onClick={() => onPageSizeChange(5)}>5</button>
