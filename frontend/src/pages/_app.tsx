@@ -14,7 +14,7 @@ import { useRouter } from "next/router";
 import { useEffect } from "react";
 
 const link = createHttpLink({
-  uri: "http://localhost:5000",
+  uri: "/api",
   credentials: "include",
 });
 
