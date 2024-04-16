@@ -1,18 +1,31 @@
 services:
   backend:
-    build: ./backend
-    ports:
-      - 5000:5000 # local:container
-    env_file: ./backend/.env
+    image: aleygues/thegoodcorner0923-backend:latest
+    volumes:
+      - ./uploads:/app/uploads
+    environment:
+      - DB_USERNAME=superuser
+      - DB_PASSWORD=supersecret
+      - DB_NAME=thegoodcorner
+      - JWT_SECRET=4045114e-c6a6-439b-87ff-0a6c65895212
   db:
     image: postgres
-    ports:
-      - 5433:5432 # local:container
+    # ports:
+    #  - 5433:5432 # local:container
     volumes:
       - /var/lib/postgresql/data
-    env_file: .env
+    environment:
+      - POSTGRES_USER=superuser
+      - POSTGRES_PASSWORD=supersecret
+      - POSTGRES_DB=thegoodcorner
   frontend:
-    build: ./frontend
+    image: aleygues/thegoodcorner0923-frontend:latest
+  nginx:
+    stop_grace_period: 0s
+    image: nginx:1.21.3
+    restart: always
     ports:
-      - 3001:3000 # local:container
-
+      - ${GATEWAY_PORT:-8000}:80
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      # - ./logs:/var/log/nginx
