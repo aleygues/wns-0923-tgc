@@ -25,7 +25,7 @@ export class Category extends BaseEntity {
   name!: string;
 
   @ManyToOne(() => Image)
-  @Field()
+  @Field({ nullable: true })
   image!: Image;
 
   @OneToMany(() => Ad, (ad) => ad.category)
@@ -38,7 +38,7 @@ export class CategoryCreateInput {
   @Field()
   name!: string;
 
-  @Field()
+  @Field({ nullable: true })
   image!: ObjectId;
 }
 
@@ -47,6 +47,6 @@ export class CategoryUpdateInput {
   @Field({ nullable: true })
   name!: string;
 
-  @Field()
+  @Field({ nullable: true })
   image!: ObjectId;
 }

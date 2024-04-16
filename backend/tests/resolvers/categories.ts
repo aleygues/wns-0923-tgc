@@ -20,6 +20,7 @@ export default function (args: TestArgs) {
         },
         contextValue: mock.context,
       })) as any;
+      console.log(result.errors);
       expect(result.data.createCategory.id).toBe("1");
       const category = await Category.findOneBy({
         id: result.data.createCategory.id,
