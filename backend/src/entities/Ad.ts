@@ -45,7 +45,7 @@ export class Ad extends BaseEntity {
 
   @ManyToOne(() => Category, (category) => category.ads)
   @Field(() => Category, { nullable: true })
-  category!: Category;
+  category!: Promise<Category>;
 
   @ManyToMany(() => Tag, (tag) => tag.ads, { cascade: ["remove"] })
   // check with SQLite extension! If you forget this following line, the
