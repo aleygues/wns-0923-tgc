@@ -1,18 +1,14 @@
-import {
-  Arg,
-  Authorized,
-  Ctx,
-  ID,
-  Mutation,
-  Query,
-  Resolver,
-} from "type-graphql";
+import { Arg, Ctx, ID, Mutation, Query, Resolver } from "type-graphql";
 import { User, UserCreateInput } from "../entities/User";
 import { validate } from "class-validator";
 import argon2 from "argon2";
 import jwt from "jsonwebtoken";
 import Cookies from "cookies";
 import { ContextType, getUserFromReq } from "../auth";
+import { UserToken } from "../entities/UserToken";
+import { addDays, isBefore } from "date-fns";
+import { v4 as uuidv4 } from "uuid";
+import { sendResetPassword } from "../email";
 
 @Resolver(User)
 export class UsersResolver {
@@ -78,8 +74,6 @@ export class UsersResolver {
     @Arg("email") email: string,
     @Arg("password") password: string
   ): Promise<User | null> {
-    //const hashedPassword = await argon2.hash(password);
-
     const existingUser = await User.findOneBy({ email });
     if (existingUser) {
       if (await argon2.verify(existingUser.hashedPassword, password)) {
@@ -107,5 +101,65 @@ export class UsersResolver {
     } else {
       return null;
     }
+  }
+
+  @Mutation(() => Boolean)
+  async resetPassword(
+    @Arg("email") email: string,
+    @Ctx() context: ContextType
+  ): Promise<boolean> {
+    const connectedUser = await getUserFromReq(context.req, context.res);
+    if (connectedUser) {
+      throw new Error("already connected");
+    }
+
+    const user = await User.findOne({ where: { email } });
+
+    if (!user) {
+      return true;
+    }
+
+    const token = new UserToken();
+    token.user = user;
+    token.createdAt = new Date();
+    token.expiresAt = addDays(new Date(), 2);
+    token.token = uuidv4();
+
+    await token.save();
+
+    // send email
+    await sendResetPassword(email, token.token);
+    console.log(token);
+
+    return true;
+  }
+
+  @Mutation(() => Boolean)
+  async setPassword(
+    @Arg("token") token: string,
+    @Arg("password") password: string
+  ): Promise<boolean> {
+    const userToken = await UserToken.findOne({
+      where: { token },
+      relations: { user: true },
+    });
+
+    if (!userToken) {
+      throw new Error("invalid token");
+    }
+
+    if (isBefore(new Date(userToken.expiresAt), new Date())) {
+      throw new Error("expired token");
+    }
+
+    // check new password validity
+
+    const hashedPassword = await argon2.hash(password);
+    userToken.user.hashedPassword = hashedPassword;
+    await userToken.user.save();
+
+    await userToken.remove();
+
+    return true;
   }
 }

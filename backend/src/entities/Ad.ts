@@ -63,7 +63,7 @@ export class Ad extends BaseEntity {
   @Field()
   createdAt!: Date;
 
-  @ManyToOne(() => User, (user) => user.ads)
+  @ManyToOne(() => User, (user) => user.ads, { eager: true })
   @Field(() => User)
   createdBy!: User;
 }

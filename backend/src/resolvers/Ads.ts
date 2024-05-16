@@ -3,6 +3,7 @@ import {
   Authorized,
   Ctx,
   ID,
+  Info,
   Int,
   Mutation,
   Query,
@@ -54,10 +55,10 @@ export class AdsResolver {
       where: queryWhere,
       relations: {
         category: true,
-        tags: true,
         createdBy: true,
       },
     });
+
     return ads;
   }
 
