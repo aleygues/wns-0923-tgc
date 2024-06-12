@@ -6,21 +6,43 @@ import {
   ApolloProvider,
   InMemoryCache,
   createHttpLink,
+  split,
   useQuery,
 } from "@apollo/client";
 import type { AppProps } from "next/app";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
+import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
+import { createClient } from "graphql-ws";
+import { getMainDefinition } from "@apollo/client/utilities";
 
 const link = createHttpLink({
-  uri: "/api",
+  uri: "http://localhost:5000",
   credentials: "include",
 });
 
+const wsLink = new GraphQLWsLink(
+  createClient({
+    url: "ws://localhost:5000",
+  })
+);
+
+const splitLink = split(
+  ({ query }) => {
+    const definition = getMainDefinition(query);
+    return (
+      definition.kind === "OperationDefinition" &&
+      definition.operation === "subscription"
+    );
+  },
+  wsLink,
+  link
+);
+
 const client = new ApolloClient({
   cache: new InMemoryCache(),
-  link,
+  link: splitLink,
 });
 
 const publicPages = ["/", "/signin", "/signup", "/ads/[id]"];

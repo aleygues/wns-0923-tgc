@@ -6,10 +6,11 @@ import { User } from "./entities/User";
 import { PostgresConnectionOptions } from "typeorm/driver/postgres/PostgresConnectionOptions";
 import { Image } from "./entities/Image";
 import { UserToken } from "./entities/UserToken";
+import { Message } from "./entities/Message";
 
 export const dataSourceOptions: PostgresConnectionOptions = {
   type: "postgres",
-  entities: [Category, Ad, Tag, User, Image, UserToken],
+  entities: [Category, Ad, Tag, User, Image, UserToken, Message],
   synchronize: true,
   logging: true,
   host: process.env.DB_HOST ?? "db",

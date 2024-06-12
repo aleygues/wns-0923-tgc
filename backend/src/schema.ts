@@ -5,6 +5,8 @@ import { CategoriesResolver } from "./resolvers/Categories";
 import { UsersResolver } from "./resolvers/Users";
 import { customAuthChecker } from "./auth";
 import { ImagesResolver } from "./resolvers/Images";
+import { pubSub } from "./pubsub";
+import { MessagesResolver } from "./resolvers/Messages";
 
 export async function getSchema() {
   const schema = await buildSchema({
@@ -14,8 +16,10 @@ export async function getSchema() {
       AdsResolver,
       UsersResolver,
       ImagesResolver,
+      MessagesResolver,
     ],
     authChecker: customAuthChecker,
+    pubSub: pubSub as any,
   });
   return schema;
 }

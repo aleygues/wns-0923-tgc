@@ -9,6 +9,8 @@ import http from "http";
 import cors from "cors";
 import { getSchema } from "./schema";
 import { initializeRoutes } from "./routes";
+import { WebSocketServer } from "ws";
+import { useServer } from "graphql-ws/lib/use/ws";
 
 async function start() {
   await dataSource.initialize();
@@ -18,9 +20,44 @@ async function start() {
   const app = express();
   const httpServer = http.createServer(app);
 
+  // Creating the WebSocket server
+  const wsServer = new WebSocketServer({
+    // This is the `httpServer` we created in a previous step.
+    server: httpServer,
+    // Pass a different path here if app.use
+    // serves expressMiddleware at a different path
+    // path: '/subscriptions',
+  });
+
+  // Hand in the schema we just created and have the
+  // WebSocketServer start listening.
+  const serverCleanup = useServer(
+    {
+      schema,
+      context: (connection) => {
+        return {
+          req: connection.extra.request,
+          res: null,
+        };
+      },
+    },
+    wsServer
+  );
+
   const server = new ApolloServer<ContextType>({
     schema,
-    plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
+    plugins: [
+      ApolloServerPluginDrainHttpServer({ httpServer }), // Proper shutdown for the WebSocket server.
+      {
+        async serverWillStart() {
+          return {
+            async drainServer() {
+              await serverCleanup.dispose();
+            },
+          };
+        },
+      },
+    ],
   });
 
   await server.start();
@@ -30,7 +67,7 @@ async function start() {
   app.use(
     "/",
     cors<cors.CorsRequest>({
-      origin: "http://localhost:3000",
+      origin: "http://localhost:3001",
       credentials: true,
     }),
     // 50mb is the limit that `startStandaloneServer` uses, but you may configure this to suit your needs

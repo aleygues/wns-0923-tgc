@@ -1,3 +1,4 @@
+import { Chat } from "@/components/Chat";
 import { Layout } from "@/components/Layout";
 import { RecentAds } from "@/components/RecentAds";
 import { useRouter } from "next/router";
@@ -15,6 +16,7 @@ export default function Home() {
 
   return (
     <Layout title="Home">
+      <Chat />
       <RecentAds searchWord={searchWord} />
     </Layout>
   );

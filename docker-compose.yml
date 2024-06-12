@@ -5,6 +5,8 @@ services:
       - ./backend/src:/app/src
       - ./uploads:/app/uploads
     env_file: ./backend/.env
+    ports:
+      - 5000:5000
   db:
     image: postgres
     ports:
